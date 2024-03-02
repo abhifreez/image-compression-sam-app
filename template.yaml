@@ -17,6 +17,7 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
+  ##Hello Wold Function
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -31,6 +32,15 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+
+  ##Image Compress Function
+  ImageCompressFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: compress-image/
+      Handler: handler.imagecompress
+      Runtime: nodejs18.x
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:

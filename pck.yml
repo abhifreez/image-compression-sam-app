@@ -17,7 +17,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://tetris-testbucket-v1/12aacda35a47821cb913afdc0ad28c63
+      CodeUri: s3://tetris-testbucket-v1/6a3f7258dafd9a7d65543120db8acd24
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
@@ -30,6 +30,14 @@ Resources:
             Method: get
     Metadata:
       SamResourceId: HelloWorldFunction
+  ImageCompressFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://tetris-testbucket-v1/c809699c5b7d3a4164b8414af40c1c87
+      Handler: handler.imagecompress
+      Runtime: nodejs18.x
+    Metadata:
+      SamResourceId: ImageCompressFunction
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:

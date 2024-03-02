@@ -1,7 +1,8 @@
-const Sharp = require('sharp')
+import Sharp from 'compress-images';
 
 
-exports.imagecompress = async(event) => {
+
+export const imagecompress = async(event) => {
 
     console.log("Event:",event)
     let sharpObj = new Sharp();

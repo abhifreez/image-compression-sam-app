@@ -30,26 +30,6 @@ Resources:
             Method: get
     Metadata:
       SamResourceId: HelloWorldFunction
-  ImageCopressFunction:
-    Type: AWS::Serverless:Function
-    Properties:
-      Handler: handler.clock
-      Runtime: nodejs18.x
-      Events:
-        BucketEvent1:
-          Type: S3
-          Properties:
-            Bucket:
-              Ref: Bucket1
-            Events:
-            - s3:ObjectCreated:*
-            Filter:
-              S3Key:
-                Rules:
-                - Name: prefix
-                  Value: images/
-    Metadata:
-      SamResourceId: ImageCopressFunction
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:

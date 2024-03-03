@@ -2,9 +2,12 @@ import compress_images from "compress-images";
 import AWS from "aws-sdk";
 import fs from "fs";
 import path from "path";
+import mime from "mime";
 
 const PATH_UNCOMPRESS_IMAGE = "original_image/";
 const PATH_COMPRESS_IMAGE = "compress_image/";
+var bucket_name = "";
+var file_path = "";
 
 const saveImageToLocalFormS3Event = async (bucket, image_path) => {
   let s3 = new AWS.S3();
@@ -27,10 +30,32 @@ const saveImageToLocalFormS3Event = async (bucket, image_path) => {
 
   return PATH_UNCOMPRESS_IMAGE + file_name;
 };
+const saveCompressImageToS3 = async (bucket, upload_path, local_path) => {
+  let s3 = new AWS.S3();
 
+  let file_content = await fs.readFileSync(local_path);
+  let content_type = await mime.getType(local_path);
+  try {
+    let obj = await s3
+      .putObject({
+        Bucket: bucket,
+        Key: upload_path,
+        Body: file_content,
+        ContentType: content_type,
+      })
+      .promise();
+    console.log("File Put Success");
+    let status = fs.unlinkSync(local_path);
+    console.log("File Delete Status:", status);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
 const compressImageAtPath = async (image_path) => {
   try {
-    compress_images(
+    await compress_images(
       image_path,
       PATH_COMPRESS_IMAGE,
       { compress_force: false, statistic: true, autoupdate: true },
@@ -47,7 +72,15 @@ const compressImageAtPath = async (image_path) => {
       function (err, completed) {
         if (completed === true) {
           // Doing something.
+          fs.unlinkSync(image_path);
+          saveCompressImageToS3(
+            bucket_name,
+            file_path,
+            PATH_COMPRESS_IMAGE + path.basename(image_path)
+          );
+
           console.log("Status:", completed);
+          return PATH_COMPRESS_IMAGE + "";
         } else {
           console.log("Error:", err);
         }
@@ -60,14 +93,11 @@ const compressImageAtPath = async (image_path) => {
 
 export const imagecompress = async (event) => {
   console.log("Event:", event);
-  let input_path = "image-1.jpeg";
-  let output_path = "";
-  let image_path = await saveImageToLocalFormS3Event(
-    "tetris-testbucket-v1",
-    "images/image-1.jpg"
-  );
-  await compressImageAtPath(image_path);
-
+  file_path = "images/image-1.jpg";
+  bucket_name = "tetris-testbucket-v1";
+  let image_path = await saveImageToLocalFormS3Event(bucket_name, file_path);
+  let compressImagePath = await compressImageAtPath(image_path);
+  console.log("compressImagePath:", compressImagePath);
   console.log("Sharp Obj:", event);
 };
 

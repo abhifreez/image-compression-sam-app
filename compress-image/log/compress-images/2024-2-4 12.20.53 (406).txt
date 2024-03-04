@@ -1,7 +1,0 @@
-File from: [tmp/original/test-file-1.jpg]
-
-File to: [tmp/compressed/test-file-1.jpg]
-
-Compression algorithm: [-]
-
-Description: File does not exist!

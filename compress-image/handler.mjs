@@ -1,8 +1,9 @@
-import compress from "compress-images/promise.js";
+//import compress from "compress-images/promise.js";
 import AWS from "aws-sdk";
 import fs from "fs";
 import path, { basename } from "path";
 import mime from "mime";
+import sharp from "sharp";
 
 const PATH_UNCOMPRESS_IMAGE = "/tmp/original/";
 const PATH_COMPRESS_IMAGE = "/tmp/compressed/";
@@ -77,26 +78,13 @@ const compressImageAtPath = async (image_path) => {
     console.log(image_path);
     console.log(PATH_COMPRESS_IMAGE);
 
-    let result = await compress.compress({
-      source: image_path,
-      destination: PATH_COMPRESS_IMAGE,
-      enginesSetup: {
-        jpg: { engine: "mozjpeg", command: ["-quality", "30"] },
-        png: { engine: "pngquant", command: ["--quality=20-50", "-o"] },
-        svg: { engine: "svgo", command: "--multipass" },
-        gif: {
-          engine: "gifsicle",
-          command: ["--colors", "64", "--use-col=web"],
-        },
-      },
-    });
+    let result = await sharp(fs.readFileSync(image_path).buffer)
+      .resize(200)
+      .jpeg({ mozjpeg: true })
+      .toFile(PATH_COMPRESS_IMAGE + path.basename(image_path));
+
     console.log(result);
-    const { statistics, errors } = result;
-    if (errors.length === 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   } catch (error) {
     console.log("compressImageAtPath:", "05");
     console.log("Catch Error:", error);

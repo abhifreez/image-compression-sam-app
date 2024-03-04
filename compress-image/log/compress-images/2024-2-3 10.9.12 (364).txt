@@ -1,7 +1,0 @@
-File from: [compress-image/image_1.jpeg]
-
-File to: [image_1_compressed.jpegimage_1.jpeg]
-
-Compression algorithm: [-]
-
-Description: File does not exist!

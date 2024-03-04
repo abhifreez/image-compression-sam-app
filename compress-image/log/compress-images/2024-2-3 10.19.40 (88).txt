@@ -1,8 +1,0 @@
-File from: [image-1.jpeg]
-
-File to: [/image-1.jpeg]
-
-Compression algorithm: [mozjpeg]
-
-Description: Error: Command failed: /Users/abhinavagarwal/Documents/Developer/image-compress-sam/image-compress-sam-app/compress-image/node_modules/mozjpeg/vendor/cjpeg -quality 60 -outfile /image-1.jpeg image-1.jpeg
-/Users/abhinavagarwal/Documents/Developer/image-compress-sam/image-compress-sam-app/compress-image/node_modules/mozjpeg/vendor/cjpeg: can't open /image-1.jpeg

@@ -33,7 +33,7 @@ Resources:
   ImageCompressFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://tetris-testbucket-v1/12be335bf3ab82aae969969842f2992a
+      CodeUri: s3://tetris-testbucket-v1/3a1afb9feda20b9c771b88154234e415
       Handler: handler.imagecompress
       Runtime: nodejs18.x
     Metadata:

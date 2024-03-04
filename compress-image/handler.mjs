@@ -1,7 +1,7 @@
-import compress_images from "compress-images";
+import compress from "compress-images/promise.js";
 import AWS from "aws-sdk";
 import fs from "fs";
-import path from "path";
+import path, { basename } from "path";
 import mime from "mime";
 
 const PATH_UNCOMPRESS_IMAGE = "/tmp/original/";
@@ -74,48 +74,33 @@ const saveCompressImageToS3 = async (bucket, upload_path, local_path) => {
 const compressImageAtPath = async (image_path) => {
   try {
     console.log("compressImageAtPath:", "01");
-    await compress_images(
-      image_path,
-      PATH_COMPRESS_IMAGE,
-      { compress_force: false, statistic: true, autoupdate: true },
-      false,
-      { jpg: { engine: "mozjpeg", command: ["-quality", "30"] } },
-      { png: { engine: "pngquant", command: ["--quality=20-50", "-o"] } },
-      { svg: { engine: "svgo", command: "--multipass" } },
-      {
+    console.log(image_path);
+    console.log(PATH_COMPRESS_IMAGE);
+
+    let result = await compress.compress({
+      source: image_path,
+      destination: PATH_COMPRESS_IMAGE,
+      enginesSetup: {
+        jpg: { engine: "mozjpeg", command: ["-quality", "30"] },
+        png: { engine: "pngquant", command: ["--quality=20-50", "-o"] },
+        svg: { engine: "svgo", command: "--multipass" },
         gif: {
           engine: "gifsicle",
           command: ["--colors", "64", "--use-col=web"],
         },
       },
-      function (err, completed) {
-        console.log("compressImageAtPath:", "02");
-
-        if (completed === true) {
-          //Doing something.
-          console.log("compressImageAtPath:", "03");
-
-          fs.unlinkSync(image_path);
-          console.log("compressImageAtPath:", "03.1");
-
-          saveCompressImageToS3(
-            bucket_name,
-            file_path,
-            PATH_COMPRESS_IMAGE + path.basename(image_path)
-          );
-          console.log("compressImageAtPath:", "03.2");
-          console.log("Status:", completed);
-        } else {
-          console.log("compressImageAtPath:", "04");
-
-          console.log("Error:", err);
-        }
-      }
-    );
+    });
+    console.log(result);
+    const { statistics, errors } = result;
+    if (errors.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.log("compressImageAtPath:", "05");
-
     console.log("Catch Error:", error);
+    return false;
   }
   console.log("compressImageAtPath:", "06");
 };
@@ -128,15 +113,25 @@ export const imagecompress = async (event) => {
   file_path = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, " ")
   );
-  console.log("File Path From Bucket:", file_path);
   bucket_name = event.Records[0].s3.bucket.name;
-  console.log("Bucket:", bucket_name);
+
   //When running on local
   // file_path = "images/test-file-1.jpg";
   // bucket_name = "tetris-testbucket-v1";
+  console.log("File Path From Bucket:", file_path);
+  console.log("Bucket:", bucket_name);
 
   let image_path = await saveImageToLocalFormS3Event(bucket_name, file_path);
   let compressImagePath = await compressImageAtPath(image_path);
+  if (compressImagePath === true) {
+    await saveCompressImageToS3(
+      bucket_name,
+      file_path,
+      PATH_COMPRESS_IMAGE + path.basename(image_path)
+    );
+  } else {
+    console.log("Failed:", "Unable to compress");
+  }
 };
 
 export default imagecompress;

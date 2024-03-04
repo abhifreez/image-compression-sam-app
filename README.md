@@ -1,7 +1,12 @@
 # image-compress-sam-app
 
 ##Instructions:
-sam deploy --template-file /Users/abhinavagarwal/Documents/Developer/image-compress-sam/image-compress-sam-app/pck.yml --stack-name <YOUR STACK NAME>
+
+### Step 1: sam build
+
+### Step 2: sam package --template-file template.yaml --output-template-file pck.yml --s3-bucket tetris-testbucket-v1
+
+### Step 2: sam deploy --template-file /Users/abhinavagarwal/Documents/Developer/image-compress-sam/image-compress-sam-app/pck.yml --stack-name image-compress-sam
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 

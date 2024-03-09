@@ -8,6 +8,20 @@
 
 ### Step 2: sam deploy --template-file /Users/abhinavagarwal/Documents/Developer/image-compress-sam/image-compress-sam-app/pck.yml --stack-name image-compress-sam
 
+# npm install --arch=x64 --platform=linux --target=16x compress-images
+
+# npm install --arch=x64 --platform=linux --target=16x pngquant-bin@6.0.1 --save
+
+# npm install --arch=x64 --platform=linux --target=16x gifsicle@5.2.1 --save
+
+# npm install --arch=x64 --platform=linux --target=16x gifsicle@5.2.1 --sharp
+
+# Methods
+
+## resizeImageAtPath (image_path, max_widhth)
+
+## compressImageAtPath (image_path, max_widhth)
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
 - hello-world - Code for the application's Lambda function.

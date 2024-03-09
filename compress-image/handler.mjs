@@ -44,6 +44,7 @@ const saveImageToLocalFormS3Event = async (bucket, image_path) => {
 
   return PATH_UNCOMPRESS_IMAGE + file_name;
 };
+
 const saveCompressImageToS3 = async (bucket, upload_path, local_path) => {
   console.log("saveCompressImageToS3:", "Started");
 
@@ -72,15 +73,36 @@ const saveCompressImageToS3 = async (bucket, upload_path, local_path) => {
     return false;
   }
 };
-const compressImageAtPath = async (image_path) => {
+
+const resizeImageAtPath = async (image_path, max_widhth) => {
   try {
     console.log("compressImageAtPath:", "01");
     console.log(image_path);
     console.log(PATH_COMPRESS_IMAGE);
 
     let result = await sharp(fs.readFileSync(image_path).buffer)
-      .resize(200)
+      .resize(max_widhth)
       .jpeg({ mozjpeg: true })
+      .toFile(PATH_COMPRESS_IMAGE + path.basename(image_path));
+
+    console.log(result);
+    return true;
+  } catch (error) {
+    console.log("compressImageAtPath:", "05");
+    console.log("Catch Error:", error);
+    return false;
+  }
+  console.log("compressImageAtPath:", "06");
+};
+
+const compressImageAtPath = async (image_path, quality) => {
+  try {
+    console.log("compressImageAtPath:", "01");
+    console.log(image_path);
+    console.log(PATH_COMPRESS_IMAGE);
+
+    let result = await sharp(fs.readFileSync(image_path).buffer)
+      .jpeg({ mozjpeg: true, quality: quality })
       .toFile(PATH_COMPRESS_IMAGE + path.basename(image_path));
 
     console.log(result);
@@ -110,7 +132,7 @@ export const imagecompress = async (event) => {
   console.log("Bucket:", bucket_name);
 
   let image_path = await saveImageToLocalFormS3Event(bucket_name, file_path);
-  let compressImagePath = await compressImageAtPath(image_path);
+  let compressImagePath = await compressImageAtPath(image_path, 200);
   if (compressImagePath === true) {
     await saveCompressImageToS3(
       bucket_name,
